@@ -30,7 +30,7 @@ const GameBoard = () => {
     alert(`GAME END!!!
     Player 1 Score: ${score.player1}
     Player 2 Score: ${score.player2}`);
-    
+
     toast.success(`GAME END!!!`);
     setFinalTimeLeft(120);
     setWords([]);
@@ -85,9 +85,12 @@ const GameBoard = () => {
     }
 
     try {
-      const { data } = await axios.post("http://localhost:5000/wordValidate", {
-        word: inputWord,
-      });
+      const { data } = await axios.post(
+        "https://shiritori-game-server.onrender.com/wordValidate",
+        {
+          word: inputWord,
+        }
+      );
       if (!data.valid) {
         toast.error("Word is not in meaningful");
         return;

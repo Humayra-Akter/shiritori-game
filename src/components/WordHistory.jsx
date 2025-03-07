@@ -12,7 +12,7 @@ const WordHistory = ({ words }) => {
         ))}
       </ul>
     </div>
-  );
-};
+  )
+}
 
 export default WordHistory;

@@ -5,7 +5,7 @@ import GameBoard from "./components/GameBoard";
 function App() {
   return (
     <div>
-      <GameBoard />;
+      <GameBoard />
       <ToastContainer />
     </div>
   );
