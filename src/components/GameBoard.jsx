@@ -4,13 +4,40 @@ import Timer from "./Timer";
 import WordHistory from "./WordHistory";
 import { toast } from "react-toastify";
 import axios from "axios";
+import FinalTimer from "./FinalTimer";
 
 const GameBoard = () => {
   const [currentPlayer, setCurrentPlayer] = useState(1);
   const [words, setWords] = useState([]);
   const [score, setScore] = useState({ player1: 0, player2: 0 });
   const [timeLeft, setTimeLeft] = useState(10);
+  const [finalTimeLeft, setFinalTimeLeft] = useState(100);
   const [inputWord, setInputWord] = useState("");
+
+  //final time
+  useEffect(() => {
+    if (finalTimeLeft === 0) {
+      handleFinalTimeout();
+    }
+    const finalTimer = setTimeout(
+      () => setFinalTimeLeft(finalTimeLeft - 1),
+      1000
+    );
+    return () => clearTimeout(finalTimer);
+  }, [finalTimeLeft]);
+
+  const handleFinalTimeout = () => {
+    alert(`GAME END!!!
+    Player 1 Score: ${score.player1}
+    Player 2 Score: ${score.player2}`);
+    
+    toast.success(`GAME END!!!`);
+    setFinalTimeLeft(120);
+    setWords([]);
+    setScore({ player1: 0, player2: 0 });
+    setCurrentPlayer(1);
+    setTimeLeft(10);
+  };
 
   //time
   useEffect(() => {
@@ -28,8 +55,8 @@ const GameBoard = () => {
       [`Player${currentPlayer}`]: prev[`Player${currentPlayer}`] - 1,
     }));
     console.log(score.player1),
-    // switch player
-    setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+      // switch player
+      setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
     setTimeLeft(10);
   };
 
@@ -69,7 +96,7 @@ const GameBoard = () => {
       setWords([...words, inputWord]);
       setScore((prev) => ({
         ...prev,
-        [`Player${currentPlayer}`]: prev[`Player${currentPlayer}`] + 1,
+        [`Player${currentPlayer}`]: prev[`Player${currentPlayer}`] + 10,
       }));
       setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
       setTimeLeft(10);
@@ -83,8 +110,11 @@ const GameBoard = () => {
 
   return (
     <div className="max-w-2xl mx-auto mt-10 p-7 bg-blue-950 rounded-lg shadow-lg">
-      <h2 className="text-4xl text-white text-center">Multiplayer</h2>
+      <h2 className="text-4xl text-white text-center">
+        Multiplayer SHIRITORI Game
+      </h2>
       <ScoreBoard score={score} />
+      <FinalTimer finalTimeLeft={finalTimeLeft} />
       <Timer timeLeft={timeLeft} />
       <div>
         <h1 className="text-2xl">Player {currentPlayer}'s Turn</h1>
