@@ -27,17 +27,29 @@ const GameBoard = () => {
   }, [finalTimeLeft]);
 
   const handleFinalTimeout = () => {
-    alert(`GAME END!!!
-    Player 1 Score: ${score.player1}
-    Player 2 Score: ${score.player2}`);
+    let winnerMessage = "";
 
-    toast.success(`GAME END!!!`);
-    setFinalTimeLeft(120);
+    if (score.player1 > score.player2) {
+      winnerMessage = "Player 1 Wins!";
+    } else if (score.player2 > score.player1) {
+      winnerMessage = "Player 2 Wins!";
+    } else {
+      winnerMessage = "It's a Draw!";
+    }
+
+    alert(
+      `GAME END!!!\nPlayer 1 Score: ${score.player1}\nPlayer 2 Score: ${score.player2}\n${winnerMessage}`
+    );
+    toast.success(`GAME OVER! ${winnerMessage}`);
+
+    // Reset the game
+    setFinalTimeLeft(100);
     setWords([]);
-    setScore({ player1: 0, player2: 0 });
-    setCurrentPlayer(1);
-    setTimeLeft(10);
+    setScore({ player1: 0, player2: 0 }); 
+    setCurrentPlayer(1); 
+    setTimeLeft(10); 
   };
+
 
   //time
   useEffect(() => {
@@ -73,10 +85,7 @@ const GameBoard = () => {
 
     if (words.length > 0) {
       const lastWord = words[words.length - 1];
-      if (
-        inputWord[0].toLowerCase() !=
-        lastWord[lastWord.length - 1].toLowerCase()
-      ) {
+      if (inputWord[0].toLowerCase() !== lastWord.slice(-1).toLowerCase()) {
         toast.error(
           "Word must start with the last letter of the previous word"
         );
@@ -87,24 +96,24 @@ const GameBoard = () => {
     try {
       const { data } = await axios.post(
         "https://shiritori-game-server.onrender.com/wordValidate",
-        {
-          word: inputWord,
-        }
+        { word: inputWord }
       );
+
       if (!data.valid) {
-        toast.error("Word is not in meaningful");
+        toast.error("Word is not meaningful!");
         return;
       }
 
-      setWords([...words, inputWord]);
+      setWords((prevWords) => [...prevWords, inputWord]);
+
       setScore((prev) => ({
         ...prev,
-        [`Player${currentPlayer}`]: prev[`Player${currentPlayer}`] + 10,
+        [`player${currentPlayer}`]: prev[`player${currentPlayer}`] + 10, // Correct key format
       }));
-      setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+
+      setCurrentPlayer((prevPlayer) => (prevPlayer === 1 ? 2 : 1));
       setTimeLeft(10);
       setInputWord("");
-      console.log(score.player1);
     } catch (error) {
       console.log(error);
       toast.error("Invalid Word!");
